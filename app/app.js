@@ -13,6 +13,10 @@ angular.module('JobScheduler', [])
 
   $scope.isCreating = false;
 
+  $scope.setNotCreating = function() {
+    $scope.isCreating = false;
+  };
+
   $scope.startCreating = function() {
     $scope.createJob();
     $scope.isCreating = true;
@@ -24,7 +28,7 @@ angular.module('JobScheduler', [])
   };
 
   $scope.createJob = function() {
-    $scope.list.push({});
+    $scope.jobList.push({});
   };
 
   $scope.deleteJob = function(job) {
@@ -36,11 +40,16 @@ angular.module('JobScheduler', [])
 .directive('jobState', function() {
   return {
     controller: function($scope) {
+
       $scope.isEditing = false;
       $scope.jobCopy = null;
 
-      $scope.checkIfEditing = function(islast, job) {
-        if ($scope.isCreating && islast) {
+      function newJobShouldBeEditing(isLast) {
+        return (isLast && $scope.isCreating && !$scope.isEditing) ? true : false;
+      };
+
+      $scope.checkIfEditing = function(isLast, job) {
+        if (newJobShouldBeEditing(isLast)) {
           return $scope.startEditing(job);
         } else {
           return $scope.isEditing;
@@ -52,15 +61,28 @@ angular.module('JobScheduler', [])
         return $scope.isEditing = true;
       };
 
-      $scope.finishEditing = function(job, copy) {
-        job.name = copy.name;
-        $scope.isEditing = false;
+      $scope.cancelEditing = function(isLast, job) {
+        $scope.isCreating && isLast ?
+          $scope.cancelCreating(job) :
+          $scope.isEditing = false;
       };
 
-      $scope.cancelEditing = function(isLast, job) {
-       $scope.isCreating && isLast ?
-         $scope.cancelCreating(job) :
-         $scope.isEditing = false;
+      function isValidJobName(job) {
+        return (job.name && (job.name !== "")) ? true : false;
+      };
+
+      function newJobIsBeingSaved(isLast) {
+        return (isLast && $scope.isCreating && $scope.isEditing) ? true : false;
+      };
+
+      $scope.saveJob = function(job, copy, isLast) {
+        if (isValidJobName(copy)) {
+          job.name = copy.name;
+          if (newJobIsBeingSaved(isLast)) {
+            $scope.setNotCreating();
+          }
+          $scope.isEditing = false;
+        }
       };
     }
   };

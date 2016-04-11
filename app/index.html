@@ -29,12 +29,16 @@
       <button ng-click="deleteJob(job)"
               ng-hide="checkIfEditing($last, job)">Remove</button>
 
-      <input type="submit" ng-click="finishEditing(job, jobCopy)"
+      <input type="submit" ng-click="saveJob(job, jobCopy, $last)"
              ng-show="checkIfEditing($last, job)"
              value="Save">
       <button ng-click="cancelEditing($last, job)"
               ng-show="checkIfEditing($last, job)">Cancel</button>
     </div>
+
+    <hr>
+
+    <button ng-click="startCreating()" ng-hide="isCreating">Add new job</button>
 
   </div>
 </div>
