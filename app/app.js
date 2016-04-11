@@ -1,5 +1,13 @@
 angular.module('JobScheduler', [])
 .controller('JobCtrl', function($scope) {
 
-  $scope.hello = "Hello World";
+  $scope.jobList = [
+    {
+      name: 'rake'
+    }, {
+      name: 'mop'
+    }, {
+      name: 'sweep'
+    }
+  ];
 });
