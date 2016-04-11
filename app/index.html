@@ -16,8 +16,24 @@
 <div class="container">
   <div class="row">
 
-    <div ng-repeat="job in jobList">
-      {{ job.name }}
+    <div job-state ng-repeat="job in jobList">
+      <form>
+        <input type="text" ng-model="jobCopy.name"
+               ng-show="checkIfEditing($last, job)" />
+        <input type="text" value="{{job.name}}"
+               ng-hide="checkIfEditing($last, job)" disabled />
+      </form>
+
+      <button ng-click="startEditing(job)"
+              ng-hide="checkIfEditing($last, job)">Edit</button>
+      <button ng-click="deleteJob(job)"
+              ng-hide="checkIfEditing($last, job)">Remove</button>
+
+      <input type="submit" ng-click="finishEditing(job, jobCopy)"
+             ng-show="checkIfEditing($last, job)"
+             value="Save">
+      <button ng-click="cancelEditing($last, job)"
+              ng-show="checkIfEditing($last, job)">Cancel</button>
     </div>
 
   </div>
