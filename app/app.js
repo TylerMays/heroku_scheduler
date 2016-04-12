@@ -10,14 +10,12 @@ angular.module('JobScheduler', ['ngMockE2E'])
     $scope.postJob = function(job) {
       $http.post('/jobs', job).then(function(response) {
         $scope.jobList = response.data;
-        console.log("POST JOB: ", $scope.jobList)
       });
     };
 
     $scope.putJob = function(job) {
       $http.put('/jobs', job).then(function(response) {
         $scope.jobList = response.data;
-        console.log("after PUT JOB: ", $scope.jobList)
       });
     };
 

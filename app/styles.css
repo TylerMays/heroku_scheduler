@@ -1,0 +1,75 @@
+.item {
+  margin: 20px 0;
+}
+.btn-job {
+  margin-top: 20px;
+}
+.row {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+.row--rule {
+  border-bottom: 1px solid #DCDCDD;
+  padding-bottom: 15px;
+  margin-bottom: 5px;
+}
+.input-group {
+  position: relative;
+  display: table;
+  border-collapse: separate;
+}
+.item_well {
+  border: 1px solid #DCDCDD;
+  padding: 15px;
+  border-radius: 4px 4px 0px 0px;
+  background-color: white;
+}
+.input-group-addon {
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  color: #3F3F44;
+  text-align: start;
+  background-color: white;
+  border: 1px solid #CBCBD2;
+  border-radius: 4px;
+  display: table-cell;
+  width: 1%;
+  white-space: nowrap;
+  vertical-align: middle;
+  font-family: monospace;
+  cursor: default;
+}
+.input-group-addon:last-child {
+  border-left: 1px solid #CBCBD2;
+}
+.form-control {
+  cursor: default;
+  background-color: white;
+}
+.item_actions {
+    padding: 7px 15px;
+    background-color: #F5F5F7;
+    border: 1px solid #DCDCDD;
+    border-radius: 0px 0px 4px 4px;
+    position: relative;
+    top: -1px;
+}
+.select-block {
+    width: 100%;
+}
+.confirm {
+    text-align: center;
+    position: absolute;
+    top: -139px;
+    left: 0px;
+    height: 178px;
+    background: rgba(0,0,0,0.9);
+    width: 100%;
+    border-radius: 4px;
+    padding-top: 34px;
+    overflow: hidden;
+    color: #B7B3BC;
+    z-index: 9001;
+}
