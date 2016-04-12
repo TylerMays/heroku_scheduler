@@ -1,27 +1,25 @@
-angular.module('JobScheduler', [])
-.controller('JobCtrl', function($scope, $filter) {
+angular.module('JobScheduler', ['ngMockE2E'])
+.controller('JobCtrl', function($scope, $filter, $http, $timeout) {
 
-  $scope.jobList = [
-    {
-      name: "rake the leaves",
-      dynoSize: "Free",
-      frequency: "Daily",
-      lastRun: "Never",
-      nextDue: "01:00"
-    }, {
-      name: "make me a sandwhich",
-      dynoSize: "Free",
-      frequency: "Hourly",
-      lastRun: "Never",
-      nextDue: "00:20"
-    }, {
-      name: "rails generate cash",
-      dynoSize: "Free",
-      frequency: "Every 10 minutes",
-      lastRun: "Never",
-      nextDue: "3:33"
-    }
-  ];
+    $scope.getJobs = function() {
+      $http.get('/jobs').then(function(response) {
+        $scope.jobList = response.data;
+      });
+    };
+
+    $scope.postJob = function(job) {
+      $http.post('/jobs', job).then(function(response) {
+        $scope.jobList = response.data;
+        console.log("POST JOB: ", $scope.jobList)
+      });
+    };
+
+    $scope.putJob = function(job) {
+      $http.put('/jobs', job).then(function(response) {
+        $scope.jobList = response.data;
+        console.log("after PUT JOB: ", $scope.jobList)
+      });
+    };
 
   $scope.isCreating = false;
 
@@ -36,7 +34,6 @@ angular.module('JobScheduler', [])
 
   $scope.cancelCreating = function(job) {
     $scope.deleteJob(job);
-    $scope.isCreating = false;
   };
 
   $scope.createJob = function() {
@@ -45,7 +42,12 @@ angular.module('JobScheduler', [])
 
   $scope.deleteJob = function(job) {
     var idx = $scope.jobList.indexOf(job);
-    $scope.jobList.splice(idx, 1);
+    $http.delete('/jobs', {data: idx}).then(function(response) {
+      $scope.jobList = response.data;
+    });
+    $timeout(function () {
+      $scope.isCreating = false;
+    }, 0);
   };
 
 
@@ -78,37 +80,41 @@ angular.module('JobScheduler', [])
               {value:'00:30',text: ":30"},{value:'00:40',text: ":40"},{value:'00:50',text: ":50"}];
     }
   };
+
+  $scope.getJobs();
 })
 
 .directive('jobState', function() {
   return {
     controller: function($scope) {
 
-      $scope.isEditing = false;
+      var isEditing = false;
       $scope.isRemoving = false;
       $scope.jobCopy = null;
 
       function newJobShouldBeEditing(isLast) {
-        return (isLast && $scope.isCreating && !$scope.isEditing) ? true : false;
+        return (isLast && $scope.isCreating && !isEditing) ? true : false;
       };
 
       $scope.checkIfEditing = function(isLast, job) {
         if (newJobShouldBeEditing(isLast)) {
           return $scope.startEditing(job);
         } else {
-          return $scope.isEditing;
+          return isEditing;
         }
       };
 
       $scope.startEditing = function(job) {
-        $scope.jobCopy = angular.copy(job);
-        return $scope.isEditing = true;
+        if (!$scope.isRemoving) {
+          $scope.jobCopy = angular.copy(job);
+          return isEditing = true;
+        }
       };
 
       $scope.cancelEditing = function(isLast, job) {
         $scope.isCreating && isLast ?
           $scope.cancelCreating(job) :
-          $scope.isEditing = false;
+          isEditing = false;
       };
 
       $scope.startRemoving = function() {
@@ -124,23 +130,74 @@ angular.module('JobScheduler', [])
       };
 
       function newJobIsBeingSaved(isLast) {
-        return (isLast && $scope.isCreating && $scope.isEditing) ? true : false;
+        return (isLast && $scope.isCreating && isEditing) ? true : false;
       };
 
       $scope.saveJob = function(job, copy, isLast) {
         if (isValidJobName(copy)) {
-          job.name = copy.name;
-          job.dynoSize = copy.dynoSize;
-          job.frequency = copy.frequency;
-          job.lastRun = copy.lastRun;
-          job.nextDue = copy.nextDue;
-
           if (newJobIsBeingSaved(isLast)) {
+            $scope.postJob(copy);
             $scope.setNotCreating();
+          } else {
+            if ($scope.isCreating && !isLast) {
+              $scope.jobList.pop();
+              $scope.setNotCreating();
+            }
+            job.name = copy.name;
+            job.dynoSize = copy.dynoSize;
+            job.frequency = copy.frequency;
+            job.lastRun = copy.lastRun;
+            job.nextDue = copy.nextDue;
+            $scope.putJob($scope.jobList);
           }
-          $scope.isEditing = false;
+          isEditing = false;
         }
       };
     }
   };
+})
+
+//  Mock Backend
+.run(function($httpBackend) {
+
+  var jobs = [
+    {
+      name: "rake the leaves",
+      dynoSize: "Free",
+      frequency: "Daily",
+      lastRun: "Never",
+      nextDue: "01:00"
+    }, {
+      name: "make me a sandwhich",
+      dynoSize: "Free",
+      frequency: "Hourly",
+      lastRun: "Never",
+      nextDue: "00:20"
+    }, {
+      name: "rails generate cash",
+      dynoSize: "Free",
+      frequency: "Every 10 minutes",
+      lastRun: "Never",
+      nextDue: "3:33"
+    }
+  ];
+
+  $httpBackend.whenGET('/jobs').respond(jobs);
+
+  $httpBackend.whenPOST('/jobs').respond(function(method, url, data) {
+    var job = angular.fromJson(data);
+    jobs.push(job);
+    return [200, jobs, {}];
+  });
+
+  $httpBackend.whenPUT('/jobs').respond(function(method, url, data) {
+    var newJobs = angular.fromJson(data);
+    jobs = newJobs;
+    return [200, jobs, {}];
+  });
+
+  $httpBackend.whenDELETE('/jobs').respond(function(method, url, data) {
+    jobs.splice(data, 1);
+    return [200, jobs, {}];
+  });
 });

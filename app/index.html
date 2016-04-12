@@ -16,7 +16,7 @@
 <div class="container">
   <div class="row">
     <div class="col-md-8 col-md-offset-2">
-
+<pre>isCreating: {{isCreating}}</pre>
       <div job-state ng-repeat="job in jobList" class="well">
         <form ng-submit="saveJob(job, jobCopy, $last)">
 
@@ -112,6 +112,7 @@
 </div>
 
   <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.0/angular-mocks.js"></script>
   <script src="app.js"></script>
 
 </body>
