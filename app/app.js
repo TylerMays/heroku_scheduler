@@ -85,6 +85,7 @@ angular.module('JobScheduler', [])
     controller: function($scope) {
 
       $scope.isEditing = false;
+      $scope.isRemoving = false;
       $scope.jobCopy = null;
 
       function newJobShouldBeEditing(isLast) {
@@ -108,6 +109,14 @@ angular.module('JobScheduler', [])
         $scope.isCreating && isLast ?
           $scope.cancelCreating(job) :
           $scope.isEditing = false;
+      };
+
+      $scope.startRemoving = function() {
+        $scope.isRemoving = true;
+      };
+
+      $scope.cancelRemoving = function() {
+        $scope.isRemoving = false;
       };
 
       function isValidJobName(job) {
