@@ -1,5 +1,8 @@
 Heroku Scheduler in AngularJS
 ---
+
+https://heroku-scheduler-angular.herokuapp.com/
+
 Frontend rewrite of Heroku's [Scheduler] add-on in [AngularJS].
 
 -   Custom jobState Directive to control application UI state
